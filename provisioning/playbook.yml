@@ -1,0 +1,10 @@
+---
+- hosts: all
+
+  tasks:
+
+    - include: jenkins.yml
+
+  handlers:
+
+    - include: jenkins-handler.yml

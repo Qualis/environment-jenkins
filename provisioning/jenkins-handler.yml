@@ -1,0 +1,46 @@
+    - name: Change Jenkins port
+      lineinfile: dest=/etc/default/jenkins regexp="HTTP_PORT=8080" line="HTTP_PORT=9080"
+      sudo: yes
+
+    - name: Restart Jenkins
+      action: service name=jenkins state=restarted
+      sudo: yes
+
+    - name: Wait for Jenkins port to be available
+      wait_for: port=9080
+
+    - name: Wait for Jenkins to be available
+      uri: url=http://localhost:9080 return_content=yes 
+      register: response
+      until: response.status == 200
+      retries: 6
+      delay: 10
+
+    - name: Store Jenkins CLI
+      get_url: url=http://localhost:9080/jnlpJars/jenkins-cli.jar dest=~/
+      sudo: yes
+
+    - name: Refresh jenkins update centre
+      shell: "curl  -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://localhost:9080/updateCenter/byId/default/postBack"
+
+    - name: Install Jenkins plugins
+      shell: java -jar ~/jenkins-cli.jar -s http://localhost:9080/ install-plugin {{ item }}
+      sudo: yes
+      with_items: 
+      - dry
+      - git
+      - pmd
+      - junit
+      - tasks
+      - deploy
+      - findbugs
+      - warnings
+      - cobertura
+      - checkstyle
+      - ws-cleanup
+      - timestamper
+      - htmlpublisher
+      - leiningen-plugin
+      - simple-theme-plugin
+      - build-monitor-plugin
+      - parameterized-trigger

@@ -1,0 +1,42 @@
+
+    - name: Install Jenkins key
+      apt_key: url=http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key state=present
+      tags:
+      - jenkins
+      - run
+      sudo: yes
+
+    - name: Update source.list
+      lineinfile: dest=/etc/apt/sources.list line="deb http://pkg.jenkins-ci.org/debian binary/"
+      tags:
+      - jenkins
+      - run
+      sudo: yes
+
+    - name: Update apt cache
+      apt: update_cache=yes
+      sudo: yes
+      tags:
+      - jenkins
+
+    - name: Install Jenkins
+      apt: pkg=jenkins
+      tags:
+      - jenkins
+      - run
+      notify:
+      - Change Jenkins port
+      - Restart Jenkins
+      - Wait for Jenkins port to be available
+      - Wait for Jenkins to be available
+      - Store Jenkins CLI
+      - Refresh jenkins update centre
+      - Install Jenkins plugins
+      sudo: yes
+
+    - name: Restart Jenkins
+      action: service name=jenkins state=restarted
+      sudo: yes
+      tags:
+      - jenkins
+      - run
