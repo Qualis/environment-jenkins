@@ -33,10 +33,12 @@
       - junit
       - tasks
       - deploy
+      - github
       - findbugs
       - warnings
       - cobertura
       - checkstyle
+      - thinBackup
       - ws-cleanup
       - timestamper
       - htmlpublisher
