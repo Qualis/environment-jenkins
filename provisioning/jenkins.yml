@@ -33,10 +33,3 @@
       - Refresh jenkins update centre
       - Install Jenkins plugins
       sudo: yes
-
-    - name: Restart Jenkins
-      action: service name=jenkins state=restarted
-      sudo: yes
-      tags:
-      - jenkins
-      - run
