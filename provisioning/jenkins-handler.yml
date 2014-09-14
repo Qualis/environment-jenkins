@@ -37,6 +37,8 @@
       - checkstyle
       - thinBackup
       - htmlpublisher
+      - artifactdeployer
+      - postbuild-task
       - leiningen-plugin
       - simple-theme-plugin
       notify:
