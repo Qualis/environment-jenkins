@@ -33,3 +33,7 @@
       - Refresh jenkins update centre
       - Install Jenkins plugins
       sudo: yes
+
+    - name: No password sudo access for jenkins user
+      lineinfile: "dest=/etc/sudoers state=present line='jenkins ALL=(ALL) NOPASSWD:ALL'"
+      sudo: yes
