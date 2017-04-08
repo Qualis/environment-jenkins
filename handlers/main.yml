@@ -1,45 +1,35 @@
-    - name: Change Jenkins port
-      lineinfile: dest=/etc/default/jenkins regexp="HTTP_PORT=8080" line="HTTP_PORT=9080"
-      sudo: yes
+
+    - name: Update defaults
+      lineinfile: dest=/etc/default/jenkins line='JAVA_ARGS="-Djenkins.install.runSetupWizard=false -Djava.awt.headless=true"' regexp='^JAVA_ARGS'
+      become: yes
 
     - name: Restart Jenkins
       action: service name=jenkins state=restarted
-      sudo: yes
+      become: yes
 
     - name: Wait for Jenkins port to be available
-      wait_for: port=9080
+      wait_for: port=8080
 
     - name: Wait for Jenkins to be available
-      uri: url=http://localhost:9080 return_content=yes 
+      uri: url=http://localhost:8080 return_content=yes
       register: response
       until: response.status == 200
       retries: 10
       delay: 10
 
     - name: Store Jenkins CLI
-      get_url: url=http://localhost:9080/jnlpJars/jenkins-cli.jar dest=~/
-      sudo: yes
+      get_url: url=http://localhost:8080/jnlpJars/jenkins-cli.jar dest=~/
+      become: yes
 
     - name: Refresh jenkins update centre
-      shell: "curl  -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://localhost:9080/updateCenter/byId/default/postBack"
+      shell: "curl  -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://localhost:8080/updateCenter/byId/default/postBack"
 
     - name: Install Jenkins plugins
-      shell: java -jar ~/jenkins-cli.jar -s http://localhost:9080/ install-plugin {{ item }}
-      sudo: yes
-      with_items: 
-      - dry
+      shell: java -jar ~/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
+      become: yes
+      with_items:
       - git
-      - pmd
-      - junit
-      - deploy
-      - github
-      - findbugs
-      - checkstyle
       - thinBackup
       - htmlpublisher
-      - artifactdeployer
-      - postbuild-task
-      - leiningen-plugin
-      - simple-theme-plugin
       notify:
       - Restart Jenkins

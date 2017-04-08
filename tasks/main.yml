@@ -1,23 +1,36 @@
+    - name: Add java 8 ppa
+      apt_repository: repo="ppa:openjdk-r/ppa"
+      tags:
+      - jenkins
+      - run
+      become: yes
 
     - name: Install Jenkins key
-      apt_key: url=http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key state=present
+      apt_key: url=https://pkg.jenkins.io/debian/jenkins.io.key state=present
       tags:
       - jenkins
       - run
-      sudo: yes
+      become: yes
 
     - name: Update source.list
-      lineinfile: dest=/etc/apt/sources.list line="deb http://pkg.jenkins-ci.org/debian binary/"
+      lineinfile: dest=/etc/apt/sources.list line="deb https://pkg.jenkins.io/debian binary/"
       tags:
       - jenkins
       - run
-      sudo: yes
+      become: yes
 
     - name: Update apt cache
       apt: update_cache=yes
-      sudo: yes
+      become: yes
       tags:
       - jenkins
+
+    - name: Install java
+      apt: pkg=openjdk-8-jre
+      tags:
+      - jenkins
+      - run
+      become: yes
 
     - name: Install Jenkins
       apt: pkg=jenkins
@@ -25,15 +38,15 @@
       - jenkins
       - run
       notify:
-      - Change Jenkins port
+      - Update defaults
       - Restart Jenkins
       - Wait for Jenkins port to be available
       - Wait for Jenkins to be available
       - Store Jenkins CLI
       - Refresh jenkins update centre
       - Install Jenkins plugins
-      sudo: yes
+      become: yes
 
     - name: No password sudo access for jenkins user
       lineinfile: "dest=/etc/sudoers state=present line='jenkins ALL=(ALL) NOPASSWD:ALL'"
-      sudo: yes
+      become: yes
