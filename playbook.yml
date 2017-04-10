@@ -9,4 +9,18 @@
       - jenkins
 
   roles:
-     - ../environment-jenkins
+    - ../environment-jenkins
+
+  post_tasks:
+    - name: Install avahi-daemon
+      apt: pkg=avahi-daemon
+      become: yes
+      tags:
+      - jenkins
+
+    - name: Disable security
+      lineinfile: dest=/var/lib/jenkins/config.xml regexp='<useSecurity>true</useSecurity>' line='<useSecurity>false</useSecurity>'
+      tags:
+      - jenkins
+      notify: Restart Jenkins
+      become: yes
