@@ -1,8 +1,4 @@
 
-    - name: Update defaults
-      lineinfile: dest=/etc/default/jenkins line='JAVA_ARGS="-Djenkins.install.runSetupWizard=false -Djava.awt.headless=true"' regexp='^JAVA_ARGS'
-      become: yes
-
     - name: Restart Jenkins
       action: service name=jenkins state=restarted
       become: yes

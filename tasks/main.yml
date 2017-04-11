@@ -38,13 +38,21 @@
       - jenkins
       - run
       notify:
-      - Update defaults
       - Restart Jenkins
       - Wait for Jenkins port to be available
       - Wait for Jenkins to be available
       - Store Jenkins CLI
       - Refresh jenkins update centre
       - Install Jenkins plugins
+      become: yes
+
+    - name: Update defaults
+      lineinfile: dest=/etc/default/jenkins line='JAVA_ARGS="-Djenkins.install.runSetupWizard=false -Djava.awt.headless=true"' regexp='^JAVA_ARGS'
+      tags:
+      - jenkins
+      - run
+      notify:
+      - Restart Jenkins
       become: yes
 
     - name: No password sudo access for jenkins user
