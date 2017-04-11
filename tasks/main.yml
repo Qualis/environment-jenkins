@@ -38,7 +38,6 @@
       - jenkins
       - run
       notify:
-      - Restart Jenkins
       - Wait for Jenkins port to be available
       - Wait for Jenkins to be available
       - Store Jenkins CLI
@@ -51,8 +50,13 @@
       tags:
       - jenkins
       - run
-      notify:
-      - Restart Jenkins
+      become: yes
+
+    - name: Restart Jenkins
+      action: service name=jenkins state=restarted
+      tags:
+      - jenkins
+      - run
       become: yes
 
     - name: No password sudo access for jenkins user
