@@ -38,11 +38,7 @@
       - jenkins
       - run
       notify:
-      - Wait for Jenkins port to be available
-      - Wait for Jenkins to be available
-      - Store Jenkins CLI
-      - Refresh jenkins update centre
-      - Install Jenkins plugins
+      - Restart Jenkins
       become: yes
 
     - name: Update defaults
@@ -61,4 +57,43 @@
 
     - name: No password sudo access for jenkins user
       lineinfile: "dest=/etc/sudoers state=present line='jenkins ALL=(ALL) NOPASSWD:ALL'"
+      tags:
+      - jenkins
+      - run
       become: yes
+
+    - name: Wait for Jenkins port to be available
+      wait_for: port=8080
+
+    - name: Wait for Jenkins to be available
+      uri: url=http://localhost:8080 return_content=yes
+      register: response
+      tags:
+      - jenkins
+      - run
+      until: response.status == 200
+      retries: 10
+      delay: 10
+
+    - name: Store Jenkins CLI
+      get_url: url=http://localhost:8080/jnlpJars/jenkins-cli.jar dest=~/
+      tags:
+      - jenkins
+      - run
+      become: yes
+
+    - name: Refresh jenkins update centre
+      shell: "curl  -L http://updates.jenkins-ci.org/update-center.json | sed '1d;$d' | curl -X POST -H 'Accept: application/json' -d @- http://localhost:8080/updateCenter/byId/default/postBack"
+
+    - name: Install Jenkins plugins
+      shell: java -jar ~/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{ item }}
+      tags:
+      - jenkins
+      - run
+      become: yes
+      with_items:
+      - git
+      - thinBackup
+      - htmlpublisher
+      notify:
+      - Restart Jenkins
