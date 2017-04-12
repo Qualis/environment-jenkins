@@ -94,6 +94,5 @@
       with_items:
       - git
       - thinBackup
-      - htmlpublisher
       notify:
       - Restart Jenkins
