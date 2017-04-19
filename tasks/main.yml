@@ -1,9 +1,3 @@
-    - name: Add OpenJDK repository
-      apt_repository: repo="ppa:openjdk-r/ppa"
-      tags:
-      - jenkins
-      - run
-      become: yes
 
     - name: Install Jenkins key
       apt_key: url=https://pkg.jenkins.io/debian/jenkins.io.key state=present
@@ -24,13 +18,6 @@
       become: yes
       tags:
       - jenkins
-
-    - name: Install OpenJDK JRE
-      apt: pkg=openjdk-8-jre
-      tags:
-      - jenkins
-      - run
-      become: yes
 
     - name: Install Jenkins
       apt: pkg=jenkins

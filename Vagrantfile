@@ -12,7 +12,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "playbook.yml"
-    ansible.tags = "jenkins"
+    ansible.tags = ["openjdk", "jenkins"]
   end
 
   if Vagrant.has_plugin?("vagrant-cachier")

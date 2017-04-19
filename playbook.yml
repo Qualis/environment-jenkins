@@ -9,6 +9,7 @@
       - jenkins
 
   roles:
+    - environment-openjdk
     - ../environment-jenkins
 
   post_tasks:
